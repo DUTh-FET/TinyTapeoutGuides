@@ -1,51 +1,73 @@
 # Tiny Tapeout & Open-Source ASIC Design Guides
 
-**DUTh-FET teaching repository** for two SKY130 learning paths:
+**DUTh-FET educational repository** with two practical SKY130 ASIC design learning paths: a **custom analog CMOS inverter** and a **digital two-bit unsigned adder**. The aim is to explain what each tool does, which commands students run, and how to verify the final physical layout.
 
-- **Custom analog:** 1.8 V CMOS inverter using Xschem, ngspice, Magic, Netgen, and KLayout.
-- **Digital:** two-bit unsigned adder using SystemVerilog, Verilator, Yosys, OpenROAD/LibreLane, Magic, Netgen, and KLayout.
+> **Course-material status:** The three teaching documents below are uploaded. Original standalone design source files (schematics, RTL, Magic hierarchy, GDS/LEF, and flow logs) have not all been added to this repository. This is **not** an official Tiny Tapeout submission.
 
-## Learning paths
+## Start here: teaching materials
 
-| Path | Guide | Implementation |
+| Learning path | Main materials | Topics |
 | --- | --- | --- |
-| [Analog inverter](analog/inverter/README.md) | Step-by-step schematic, simulation, manual layout, DRC, LVS, PEX and Tiny Tapeout integration | Custom MOS devices; 1×2 analog tile |
-| [Digital 2-bit adder](digital/adder2/README.md) | RTL verification, synthesis, floorplanning, power grid, place-and-route, timing and GDS | Standard-cell digital 1×1 tile |
-| [Setup](docs/setup.md) | Docker, SKY130 and tool launch commands | IIC-OSIC-TOOLS |
-| [References](docs/references.md) | Tools and external examples | Links only; no third-party sources copied |
+| **[Analog CMOS inverter](analog/inverter/README.md)** | **[Illustrated analog lab guide (PDF)](analog/inverter/SKY130_Analog_Inverter_Magic_KLayout_Student_Lab_Guide.pdf)** | Xschem, ngspice, manual Magic layout, DRC, Netgen LVS, parasitic extraction, Tiny Tapeout 1×2 integration, GDS/LEF, KLayout |
+| **[Digital two-bit adder](digital/adder2/README.md)** | **[Fabrication flow slides (PDF)](digital/adder2/fabrication-flow-slides%201.pdf)** · **[Detailed fabrication report (HTML)](digital/adder2/fabrication-report.html)** | SystemVerilog, Verilator, Yosys, LibreLane/OpenROAD, OpenSTA, Magic/Netgen/KLayout, 1×1 Tiny Tapeout |
+| **Environment setup** | **[IIC-OSIC-TOOLS and SKY130 setup](docs/setup.md)** | Docker setup, selecting the PDK, running Magic and KLayout |
+| **Further reading** | **[References and attribution](docs/references.md)** | IIC-OSIC-TOOLS, Docker tutorial, Panteloukos testcircuit, Tiny Tapeout and reference projects |
 
-## Project status
+For the long HTML report, GitHub may show its source rather than render it as a webpage. Download the file and open it locally in a browser if necessary.
 
-**Analog:** standalone inverter DRC/LVS passed; PEX and post-layout simulation performed; centered Tiny Tapeout 1×2 wrapper DRC passed; extracted connectivity was `Xinv_layout_clean_0 ua[0] ua[1] VDPWR VGND inv_layout_clean`. GDS exported and re-imported into Magic with clean DRC and equivalent connectivity. An alternative lower-right core placement was proposed for teaching, **not verified**.
+## Suggested student roadmap
 
-**Digital:** the provided adder reports document exhaustive RTL/wrapper testing and a digital RTL-to-GDS flow, including local precheck. See the report for the exact tool outputs and any remaining official CI work.
+1. **Set up the tools** using [the setup guide](docs/setup.md). Check that the PDK is **SKY130A** rather than the alternative IHP SG13G2 environment.
+2. **Choose one path:** the [analog inverter](analog/inverter/README.md) for transistor-level custom layout, or the [digital adder](digital/adder2/README.md) for automated RTL-to-GDS design.
+3. **Follow the accompanying guide or report**, saving your own source design and tool outputs.
+4. **Verify, don't just view:** simulation, DRC, LVS and extraction are evidence of correctness; opening a GDS in KLayout alone is a visual inspection.
+5. **Compare the physical implementations:** custom analog layouts may occupy very little area, whereas automatically placed standard cells, taps and filler cells make a digital GDS appear dense.
 
-**Publication note:** This course repository is not a Tiny Tapeout submission, and its presence on GitHub is not evidence of official precheck/CI acceptance.
+## Recorded results and their limits
 
-## Local design files
+### Analog inverter
 
-The analog source hierarchy, GDS, LEF, schematic and simulation results are located in the lab's Docker workspace under `/foss/designs/inverter` and `/foss/designs/tt_inverter`. They must be copied **from that workspace**; no fabricated or reconstructed source files should replace the verified originals.
+- PMOS: W = 2 µm, L = 0.15 µm; NMOS: W = 1 µm, L = 0.15 µm; VDD = 1.8 V.
+- Standalone inverter DRC and LVS passed; parasitic extraction and post-layout ngspice simulation were performed.
+- Centered Tiny Tapeout analog 1×2 wrapper (161 × 225.76 µm) was DRC-clean. The extracted inverter instance was:
+  `Xinv_layout_clean_0 ua[0] ua[1] VDPWR VGND inv_layout_clean`
+- The exported GDS was re-imported in Magic, with clean DRC and equivalent extracted connectivity.
+- Placing the inverter closer to the bottom analog pins was proposed as a **future optimization exercise**; that alternative placement is **not yet verified**.
 
-The original digital RTL and generated GDS are also to be copied from their source workspace, not reverse-engineered from the report.
+### Digital adder
 
-After checking the local files, the course maintainer can use `scripts/collect_local_designs.sh` to collect them in a separate working copy for upload.
+- The uploaded documents describe a combinational unsigned two-bit adder, with test results reported as **16/16** for RTL and wrapper simulations.
+- The detailed report describes a standard-cell RTL-to-GDS flow and reports **15/15 local prechecks**. This repository has **not rerun** those tests.
 
-## Project map
+Neither the uploaded documents nor these summaries establish current official tapeout acceptance.
+
+## Repository contents
 
 ```text
-analog/inverter/             analog overview, design source files to be collected
-digital/adder2/              digital overview, source RTL and output files to be collected
-docs/analog/                 illustrated analog lab guide (PDF to upload)
-docs/digital/                digital fabrication slides and HTML report (to upload)
-docs/setup.md                environment/setup
-docs/references.md           original sources and external learning materials
-scripts/                    safe local file collection
+README.md
+analog/
+  inverter/
+    README.md
+    SKY130_Analog_Inverter_Magic_KLayout_Student_Lab_Guide.pdf
+digital/
+  adder2/
+    README.md
+    fabrication-flow-slides 1.pdf
+    fabrication-report.html
+docs/
+  setup.md
+  references.md
+  UPLOAD_STATUS.md
+scripts/
+  collect_local_designs.sh
 ```
 
-## Educational comparison: analog vs digital physical design
+## Adding the reproducible project sources
 
-The analog inverter consists of two manually positioned transistors and a small set of routes in a spacious 161 × 225.76 µm tile. A digital adder is mapped to standard cells with automatically inserted well taps, endcaps, filler/decap cells and a power grid. Therefore the digital GDS looks dense, while the analog GDS looks sparse. **Visual density alone never proves correctness**; use simulation, DRC, LVS, timing checks, and appropriate extraction.
+The verified analog layout and schematic artifacts are still in the lab workspace under `/foss/designs/inverter` and `/foss/designs/tt_inverter`. Original digital source files are also needed. The [collection script](scripts/collect_local_designs.sh) copies available files into a **separate checkout** without committing or pushing anything. Review copied files before publishing them.
 
-## Reuse and credit
+See [upload status](docs/UPLOAD_STATUS.md) for the precise distinction between available course documentation and missing runnable design sources.
 
-References remain links to their original authors. For course-uploaded materials, verify permissions and add a suitable project license before making this repository public.
+## Credits and reuse
+
+Links to third-party examples are collected in [references](docs/references.md), rather than copying their source trees. Confirm the rights to distribute course-owned images and reports and add a suitable license before making this private repository public.
