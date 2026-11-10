@@ -1,38 +1,46 @@
-# Custom analog layout: CMOS inverter (SKY130A)
+# Custom analog layout: 1.8 V CMOS inverter (SKY130A)
 
-This laboratory follows a two-transistor 1.8 V CMOS inverter from Xschem/ngspice to Magic, Netgen, parasitic extraction, Tiny Tapeout analog integration, GDS export and KLayout inspection.
+**[Open the illustrated step-by-step student lab guide (PDF)](SKY130_Analog_Inverter_Magic_KLayout_Student_Lab_Guide.pdf)**
 
-**PMOS:** W = 2.0 µm, L = 0.15 µm. **NMOS:** W = 1.0 µm, L = 0.15 µm. **Analog tile:** 1×2, 161 × 225.76 µm.
+The PDF walks through the **Xschem → ngspice → Magic → Netgen → GDS/LEF → KLayout** learning path. It explains each command, distinguishes **Linux terminal** commands from Magic's **Tkcon `%`** commands, and includes troubleshooting from the actual inverter layout exercise.
 
-## Functional connections
+## Circuit specification
 
-```text
-ua[0]  --> VIN
-ua[1]  <-- VOUT
-VDPWR  --> VDD
-VGND   --> GND
-```
+| Parameter | Value |
+| --- | --- |
+| Supply | 1.8 V |
+| PMOS `sky130_fd_pr__pfet_01v8` | W = 2.0 µm, L = 0.15 µm |
+| NMOS `sky130_fd_pr__nfet_01v8` | W = 1.0 µm, L = 0.15 µm |
+| Tiny Tapeout analog tile | 1×2; 161 × 225.76 µm |
+| Analog input | `ua[0]` → `VIN` |
+| Analog output | `VOUT` → `ua[1]` |
+| Supply/ground | `VDPWR`/`VGND` |
 
-The extracted wrapper contained:
+## Recorded verification
+
+The standalone inverter passed DRC and LVS: **`Circuits match uniquely.`** With 10 fF output loading, recorded delays were approximately **48.85/57.66 ps** (`tphl`/`tplh`) before layout and **52.76/62.46 ps** after parasitic extraction.
+
+For the centered Tiny Tapeout wrapper, Magic extraction gave:
 
 ```spice
 Xinv_layout_clean_0 ua[0] ua[1] VDPWR VGND inv_layout_clean
 ```
 
-Unused digital outputs (`uo_out`, `uio_out`, `uio_oe`) were physically tied to ground.
+Unused output-type interface pins (`uo_out`, `uio_out`, `uio_oe`) were deliberately connected to `VGND`. The wrapper DRC passed; the exported GDS was re-imported in Magic, passed DRC and yielded the same instance connectivity.
 
-## Recorded checks
+**Design-quality note:** The original verified inverter was near the middle of the tile. A lower-right, analog-pin-aware placement is recommended as an educational optimization exercise, **not as an already verified alternative layout**.
 
-- Standalone DRC clean and LVS: `Circuits match uniquely.`
-- Pre-layout delay at 1.8 V, 10 fF: `tphl ≈ 48.85 ps`, `tplh ≈ 57.66 ps`.
-- Post-layout: `tphl ≈ 52.76 ps`, `tplh ≈ 62.46 ps`.
-- Centered wrapper source DRC clean; GDS round-trip DRC clean.
-- After GDS re-import, extraction still recovered the same inverter instance and port connections.
+## What students should practice
 
-**Important:** A lower-right placement near the analog pins was proposed as an improvement but was *not* established as fully verified. Only the centered version has the reported checks.
+- Device sizing and pre-layout transient simulation
+- Manual device layout, Metal1/2/3/4 routing and via placement
+- The difference between **DRC**, **LVS** and **parasitic extraction**
+- Hierarchical Magic cells and Tiny Tapeout interface routing
+- Exporting and checking **GDS** and **LEF**
+- Using KLayout to navigate the final GDS hierarchy and inspect individual MOS devices
 
-## Source and learning guide
+## Project source availability
 
-The student PDF guide belongs at `docs/analog/SKY130_Analog_Inverter_Magic_KLayout_Student_Lab_Guide.pdf`. The original `.mag`, `.gds`, `.lef`, `.sch`, and simulation sources must be copied from the verified lab machine using `scripts/collect_local_designs.sh` and reviewed before publication. The absence of these files in this repo does **not** imply the files have been generated here.
+The **PDF guide is uploaded here**, but the original editable Xschem `.sch`, Magic `.mag`, SPICE, GDS and LEF files have not yet been copied into this GitHub project. They are in the lab's `/foss/designs` workspace and can be collected using [the repository script](../../scripts/collect_local_designs.sh).
 
-Official Tiny Tapeout precheck and independent wrapper-level LVS have not been established as passing.
+**Not established as passing:** independent full wrapper LVS and official Tiny Tapeout analog precheck. This repository is educational documentation, not a tapeout submission.
