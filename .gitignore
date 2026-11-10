@@ -1,0 +1,32 @@
+# Generated EDA and simulation artifacts (keep only curated final outputs)
+*.raw
+*.vcd
+*.fst
+*.wlf
+*.log
+*.log.*
+*.jou
+*.swp
+*.swo
+*~
+__pycache__/
+.DS_Store
+*.bak
+*.before_final
+*.ext
+*.ext2spice
+*.sim
+*.nodes
+*.res.ext
+*.drc
+*.lef.tmp
+*.gds.tmp
+# Large local installation/build worktrees
+.pdk/
+pdks/
+node_modules/
+runs/
+build/
+tmp/
+.Docker/
+# Do not automatically ignore curated final .gds / .lef / .mag
