@@ -1,9 +1,0 @@
-device,sky130_model_candidate,reference_role,parameter_group,width_um,length_um,fingers,multiplier,verification_note
-M1,sky130_fd_pr__pfet_01v8,input_pair,P_IN,,,,,match M2
-M2,sky130_fd_pr__pfet_01v8,input_pair,P_IN,,,,,match M1
-M3,sky130_fd_pr__nfet_01v8,first_stage_mirror,N_MIR,,,,,mirror ratio TBD
-M4,sky130_fd_pr__nfet_01v8,first_stage_mirror,N_MIR,,,,,mirror ratio TBD
-M5,sky130_fd_pr__pfet_01v8,first_stage_bias,P_BIAS_1,,,,,ratio to M8 TBD
-M6,sky130_fd_pr__nfet_01v8,second_stage_gain,N_GAIN_2,,,,,set gm and gain TBD
-M7,sky130_fd_pr__pfet_01v8,second_stage_bias,P_BIAS_2,,,,,ratio to M8 TBD
-M8,sky130_fd_pr__pfet_01v8,diode_connected_reference,P_REF,,,,,verify drain-gate tie
